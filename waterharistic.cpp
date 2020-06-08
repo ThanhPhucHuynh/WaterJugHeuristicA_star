@@ -79,6 +79,7 @@ void initCups(Cups *CupsWater,int Goal,int X,int Y,int Z){
     for(int i=0;i<=2;i++){
         CupsWater->Cup[i].AmountOfWater = 0;
     }
+    CupsWater->Cup[0].AmountOfWater = X;
     CupsWater->Cup[0].TotalAmountOfWater = X;
     CupsWater->Cup[1].TotalAmountOfWater = Y;
     CupsWater->Cup[2].TotalAmountOfWater = Z;
@@ -161,15 +162,16 @@ void EmptyWaterCup3(Cups Cupwater, Cups *result){
     result->Cup[0].AmountOfWater = Cupwater.Cup[0].AmountOfWater;
 }
 // pour
-bool PourCupXtoCupY(Cups CupWater,int X, int Y,Cups *result){
+bool PourCupXtoCupY(Cups CupWater,int X, int Y,Cups *result,int CupNoPour){
     // printf("asdas\n");
     //  printCupWater(CupWater);
     // printCupWater(*result);
+    result->Cup[CupNoPour].AmountOfWater = CupWater.Cup[CupNoPour].AmountOfWater;
     if(!checkFullWater(CupWater.Cup[Y])&&!checkEmpty(CupWater.Cup[X])){
         result->Cup[Y].AmountOfWater = min((CupWater.Cup[X].AmountOfWater+CupWater.Cup[Y].AmountOfWater),CupWater.Cup[Y].TotalAmountOfWater);
         result->Cup[X].AmountOfWater = max(0,CupWater.Cup[X].AmountOfWater-(CupWater.Cup[Y].TotalAmountOfWater - CupWater.Cup[Y].AmountOfWater));
-        
-        // printf("%d-%d\n",CupWater->Cup[X].AmountOfWater,CupWater->Cup[Y].AmountOfWater);
+
+        //  printf("%d-%d\n",CupWater.Cup[X].AmountOfWater,CupWater.Cup[Y].AmountOfWater);
         return true;
     }else{
         if(checkFullWater(CupWater.Cup[Y])){
@@ -205,19 +207,19 @@ bool PourCupXtoCupY(Cups CupWater,int X, int Y,Cups *result){
 bool call_action(Cups Cupwater, Cups *result, int option){
    
     switch(option){
-        case 1 : fillWaterCup1(Cupwater,result); return true;
-        case 2 : fillWaterCup2(Cupwater,result); return true;
-        case 3 : fillWaterCup3(Cupwater,result); return true;
-        case 4 : EmptyWaterCup1(Cupwater,result);return true;
-        case 5 : EmptyWaterCup2(Cupwater,result);return true;
-        case 6 : EmptyWaterCup3(Cupwater,result);return true;
+        // case 1 : fillWaterCup1(Cupwater,result); return true;
+        // case 2 : fillWaterCup2(Cupwater,result); return true;
+        // case 3 : fillWaterCup3(Cupwater,result); return true;
+        // case 4 : EmptyWaterCup1(Cupwater,result);return true;
+        // case 5 : EmptyWaterCup2(Cupwater,result);return true;
+        // case 6 : EmptyWaterCup3(Cupwater,result);return true;
 
-        case 7 : return PourCupXtoCupY(Cupwater,0,1,result);
-        case 8 : return PourCupXtoCupY(Cupwater,0,2,result);
-        case 9 : return PourCupXtoCupY(Cupwater,1,0,result);
-        case 10: return PourCupXtoCupY(Cupwater,2,0,result);
-        case 11: return PourCupXtoCupY(Cupwater,1,2,result);
-        case 12: return PourCupXtoCupY(Cupwater,2,1,result);
+        case 1: return PourCupXtoCupY(Cupwater,0,1,result,2);
+        case 2: return PourCupXtoCupY(Cupwater,0,2,result,1);
+        case 3: return PourCupXtoCupY(Cupwater,1,0,result,2);
+        case 4: return PourCupXtoCupY(Cupwater,2,0,result,1);
+        case 5: return PourCupXtoCupY(Cupwater,1,2,result,0);
+        case 6: return PourCupXtoCupY(Cupwater,2,1,result,0);
 
         default: return false;
 
@@ -265,7 +267,7 @@ Node* A_start(Cups Cupwater,int Goal,vector<Cups> *explored){
         if(checkSameGoal(node->CupWater)){
             return node;
         }
-        for(int op=1;op<=12;op++){
+        for(int op=1;op<=6;op++){
             Cups new_Cup;
             
             new_Cup.Goal = Goal;
@@ -274,6 +276,7 @@ Node* A_start(Cups Cupwater,int Goal,vector<Cups> *explored){
                 new_Cup.Cup[i].TotalAmountOfWater = Cupwater.Cup[i].TotalAmountOfWater;
                 new_Cup.Cup[i].AmountOfWater = 0;
             }
+            new_Cup.Cup[0].AmountOfWater = new_Cup.Cup[0].TotalAmountOfWater;
 
             if(call_action(node->CupWater,&new_Cup,op)) {
                 if(findCups(new_Cup,explored)){
@@ -337,8 +340,10 @@ int main(){
     scanf("%d%d%d%d",&Goal,&X,&Y,&Z);
     //init Cup list
     initCups(&CupWater,Goal,X,Y,Z);
+    // fillWaterCup1(CupWater,&CupWater);
+
     // initCups(&result,Goal,X,Y,Z);
-    // printCupWater(CupWater);
+    //  printCupWater(CupWater);
     a = A_start(CupWater,Goal,&hihi);
     print_path(a);
     // printCupWater(CupWater);
