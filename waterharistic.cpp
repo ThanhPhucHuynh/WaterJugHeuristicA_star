@@ -88,7 +88,25 @@ void initCups(Cups *CupsWater,int Goal,int X,int Y,int Z){
     CupsWater->Goal = Goal;
 }
 
+void initCups1(Cups *CupsWater,int Goal,int X,int Y,int Z){
 
+    // CupsWater->Cup1.AmountOfWater = 0;
+    // CupsWater->Cup2.AmountOfWater = 0;
+    // CupsWater->Cup3.AmountOfWater = 0;
+
+    // CupsWater->Cup1.TotalAmountOfWater = 16;
+    // CupsWater->Cup2.TotalAmountOfWater =  7;
+    // CupsWater->Cup3.TotalAmountOfWater =  3;
+    for(int i=0;i<=2;i++){
+        CupsWater->Cup[i].AmountOfWater = 0;
+    }
+    // CupsWater->Cup[0].AmountOfWater = X;
+    CupsWater->Cup[0].TotalAmountOfWater = X;
+    CupsWater->Cup[1].TotalAmountOfWater = Y;
+    CupsWater->Cup[2].TotalAmountOfWater = Z;
+
+    CupsWater->Goal = Goal;
+}
 
 void printCupWater(Cups CupWater){
     
@@ -322,7 +340,8 @@ void print_path(Node*r){
     q.push(r->CupWater);
     int no_action = 0;
     while(!q.empty()){
-        printf("TRang thai thu %d: \n",i++);
+        printf("TRang thai thu %d: \n",i+1);
+        i++;
         printf("\nAction %d: %s\n", index.top(), action[index.top()]);
         printCupWater(q.top());
 
@@ -352,8 +371,8 @@ int main(){
     initCups(&CupWater,Goal,X,Y,Z);
     // fillWaterCup1(CupWater,&CupWater);
 
-    // initCups(&result,Goal,X,Y,Z);
-    //  printCupWater(CupWater);
+    initCups1(&result,Goal,X,Y,Z);
+    printCupWater(result);
     a = A_start(CupWater,Goal,&hihi);
     print_path(a);
     // printCupWater(CupWater);
