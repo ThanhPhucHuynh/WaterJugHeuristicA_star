@@ -18,7 +18,7 @@ typedef struct {
     // Cup Cup2;
     // Cup Cup3;
     Cup Cup[3];
-
+    // int index;
     int Goal;
 }Cups;
 
@@ -27,7 +27,7 @@ typedef struct {
 struct Node{   
     Cups CupWater;
     Node* parent;
-
+    int no_function;
     int g; // value router root to node
     int h; // value heuristic of node to root
     int f; // sum(g+h)
@@ -38,7 +38,8 @@ struct node_cmp{
         return a->f < b->f;
     }
 };
-
+const char*  action[] = {"first State", "pour Water X-Y", "pour Water X-Z","pour Water Y-X", "pour Water Z-X", "pour Water Y to Z", "pour Water Z to Y"
+};
 
 int max(int X,int Y){
     if(X>=Y){
@@ -271,7 +272,7 @@ Node* A_start(Cups Cupwater,int Goal,vector<Cups> *explored){
             Cups new_Cup;
             
             new_Cup.Goal = Goal;
-
+            
             for(int i=0;i<=2;i++){
                 new_Cup.Cup[i].TotalAmountOfWater = Cupwater.Cup[i].TotalAmountOfWater;
                 new_Cup.Cup[i].AmountOfWater = 0;
@@ -288,6 +289,7 @@ Node* A_start(Cups Cupwater,int Goal,vector<Cups> *explored){
                     n->parent = node;
                     n->CupWater = new_Cup;
                     n->h = 1 ;
+                    n->no_function = op;
                     // printf("newCup: \n");
                     // printCupWater(new_Cup);
                     n->g = node->g +1;  
@@ -309,16 +311,24 @@ Node* A_start(Cups Cupwater,int Goal,vector<Cups> *explored){
 void print_path(Node*r){
     int i = 0;
     stack<Cups> q;
+    stack<int> index;
     printf("duong di: \n");
     while(r->parent !=NULL){
         q.push(r->CupWater);
+        index.push(r->no_function);
         r=r->parent;
     }
+    index.push(r->no_function);
     q.push(r->CupWater);
+    int no_action = 0;
     while(!q.empty()){
-        printf("TRang thai thu %d: ",i++);
+        printf("TRang thai thu %d: \n",i++);
+        printf("\nAction %d: %s\n", index.top(), action[index.top()]);
         printCupWater(q.top());
+
+        no_action++;
         q.pop();
+        index.pop();
     }
 }
 
