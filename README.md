@@ -1,2 +1,3 @@
-"# WaterJugHeuristicA_star" 
-== g++ waterharistic.cpp -std=c++11 ==
+# Code Compile
+>**g++ waterharistic.cpp -std=c++11**
+
