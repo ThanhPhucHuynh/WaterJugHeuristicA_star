@@ -8,18 +8,19 @@
 
 using namespace std;
 
-typedef struct{
-    int AmountOfWater;
-    int TotalAmountOfWater;
+// struct for Cuo include:
+// cau truc cua mot Cuo nuoc
+typedef struct{ 
+    int AmountOfWater; //luong nuoc hien tai Cup dang chua
+    int TotalAmountOfWater;// Luong nhuoc toi da ma cup co the chua
 }Cup;
 
 typedef struct {
     // Cup Cup1;
     // Cup Cup2;
     // Cup Cup3;
-    Cup Cup[3];
-    // int index;
-    int Goal;
+    Cup Cup[3]; // array cup (we have tree cup)
+    int Goal; // var save status final
 }Cups;
 
 
@@ -27,7 +28,7 @@ typedef struct {
 struct Node{   
     Cups CupWater;
     Node* parent;
-    int no_function;
+    int no_function; // save parent Node
     int g; // value router root to node
     int h; // value heuristic of node to root
     int f; // sum(g+h)
@@ -38,9 +39,11 @@ struct node_cmp{
         return a->f < b->f;
     }
 };
+// array action String
 const char*  action[] = {"first State", "pour Water X-Y", "pour Water X-Z","pour Water Y-X", "pour Water Z-X", "pour Water Y to Z", "pour Water Z to Y"
 };
 
+//get value max a and b 
 int max(int X,int Y){
     if(X>=Y){
         return X;
@@ -48,6 +51,7 @@ int max(int X,int Y){
         return Y;
     }
 }
+//kget value min a and b
 int min(int X, int Y){
     if(X<=Y){
         return X;
@@ -56,7 +60,7 @@ int min(int X, int Y){
     }
 }
 
-
+// check exist cup in Cups same with goal
  bool checkSameGoal(Cups Cupwater){
      for(int i = 0; i <= 2; i++){
          if(Cupwater.Cup[i].AmountOfWater == Cupwater.Goal){
@@ -67,7 +71,7 @@ int min(int X, int Y){
  }
 
 
-
+// init list Cups (3 cup) and set Goal
 void initCups(Cups *CupsWater,int Goal,int X,int Y,int Z){
 
     // CupsWater->Cup1.AmountOfWater = 0;
@@ -80,7 +84,8 @@ void initCups(Cups *CupsWater,int Goal,int X,int Y,int Z){
     for(int i=0;i<=2;i++){
         CupsWater->Cup[i].AmountOfWater = 0;
     }
-    CupsWater->Cup[0].AmountOfWater = X;
+    CupsWater->Cup[0].AmountOfWater = X; // first Cup full water
+    
     CupsWater->Cup[0].TotalAmountOfWater = X;
     CupsWater->Cup[1].TotalAmountOfWater = Y;
     CupsWater->Cup[2].TotalAmountOfWater = Z;
@@ -88,6 +93,7 @@ void initCups(Cups *CupsWater,int Goal,int X,int Y,int Z){
     CupsWater->Goal = Goal;
 }
 
+// function used save fist status for Cups
 void initCups1(Cups *CupsWater,int Goal,int X,int Y,int Z){
 
     // CupsWater->Cup1.AmountOfWater = 0;
@@ -97,10 +103,10 @@ void initCups1(Cups *CupsWater,int Goal,int X,int Y,int Z){
     // CupsWater->Cup1.TotalAmountOfWater = 16;
     // CupsWater->Cup2.TotalAmountOfWater =  7;
     // CupsWater->Cup3.TotalAmountOfWater =  3;
+   
     for(int i=0;i<=2;i++){
         CupsWater->Cup[i].AmountOfWater = 0;
     }
-    // CupsWater->Cup[0].AmountOfWater = X;
     CupsWater->Cup[0].TotalAmountOfWater = X;
     CupsWater->Cup[1].TotalAmountOfWater = Y;
     CupsWater->Cup[2].TotalAmountOfWater = Z;
@@ -108,17 +114,16 @@ void initCups1(Cups *CupsWater,int Goal,int X,int Y,int Z){
     CupsWater->Goal = Goal;
 }
 
+//show now status Cups
 void printCupWater(Cups CupWater){
-    
     printf("Goal: %d \n",CupWater.Goal);
-
     for(int i=0;i<=2;i++){
         printf("Cup %d: total( %d ) -- Water( %d ) \n",i+1,CupWater.Cup[i].TotalAmountOfWater, CupWater.Cup[i].AmountOfWater);
     }
     
 }
-//check full
 
+//check full
 bool checkFullWater(Cup Cupwater){
     if(Cupwater.AmountOfWater == Cupwater.TotalAmountOfWater){
         return true;
@@ -182,50 +187,28 @@ void EmptyWaterCup3(Cups Cupwater, Cups *result){
 }
 // pour
 bool PourCupXtoCupY(Cups CupWater,int X, int Y,Cups *result,int CupNoPour){
-    // printf("asdas\n");
-    //  printCupWater(CupWater);
-    // printCupWater(*result);
+    //save staus for cup which not change
     result->Cup[CupNoPour].AmountOfWater = CupWater.Cup[CupNoPour].AmountOfWater;
+
     if(!checkFullWater(CupWater.Cup[Y])&&!checkEmpty(CupWater.Cup[X])){
         result->Cup[Y].AmountOfWater = min((CupWater.Cup[X].AmountOfWater+CupWater.Cup[Y].AmountOfWater),CupWater.Cup[Y].TotalAmountOfWater);
         result->Cup[X].AmountOfWater = max(0,CupWater.Cup[X].AmountOfWater-(CupWater.Cup[Y].TotalAmountOfWater - CupWater.Cup[Y].AmountOfWater));
-
         //  printf("%d-%d\n",CupWater.Cup[X].AmountOfWater,CupWater.Cup[Y].AmountOfWater);
-        return true;
+        return true;// return true if pour successfully
     }else{
         if(checkFullWater(CupWater.Cup[Y])){
             // printf("Can't pour %d to %d because cup %d: full\n",X,Y,Y);
         }else{
             // printf("Can't pour %d to %d because cup %d: empty\n",X,Y,X);
         }
-        return false;
+        return false;// return false if erro
     }
 }
-
-// void PourCup1toCup2(Cups *Cupswater){
-    
-// } 
-// void PourCup1toCup3(Cups *Cupswater){
-
-// } 
-// void PourCup2toCup1(Cups *Cupswater){
-
-// } 
-// void PourCup3toCup1(Cups *Cupswater){
-
-// } 
-// void PourCup2toCup3(Cups *Cupswater){
-
-// } 
-// void PourCup3toCup2(Cups *Cupswater){
-
-// } 
-
-
 
 bool call_action(Cups Cupwater, Cups *result, int option){
    
     switch(option){
+    
         // case 1 : fillWaterCup1(Cupwater,result); return true;
         // case 2 : fillWaterCup2(Cupwater,result); return true;
         // case 3 : fillWaterCup3(Cupwater,result); return true;
@@ -246,7 +229,9 @@ bool call_action(Cups Cupwater, Cups *result, int option){
     }
 }
 
-
+int h1(Cups Cupwater, int Goal){
+    return 1;
+}
 
 bool findCups(Cups Cupwater,vector<Cups> *explored){
     for(Cups Cup: *explored){
@@ -269,13 +254,12 @@ Node* A_start(Cups Cupwater,int Goal,vector<Cups> *explored){
 
     Node* root =  new Node();
     root->CupWater = Cupwater;
-    // printCupWater(root->CupWater);
     root->parent = NULL;
     root->g = 0;
-    root->h = 1;
+    // root->h = 1;
+    root ->h = h1(Cupwater,Goal);
     root->f = root->g + root->h;
-    // printf("Dasdas\n");
-    // printCupWater(root->CupWater);
+  
     multiset<Node*,node_cmp> frontiers;
     frontiers.insert(root);
     
@@ -306,13 +290,13 @@ Node* A_start(Cups Cupwater,int Goal,vector<Cups> *explored){
                     n=new Node();
                     n->parent = node;
                     n->CupWater = new_Cup;
-                    n->h = 1 ;
+                    // n->h = 1 ;
+                    n->h = h1(new_Cup,Goal);
                     n->no_function = op;
-                    // printf("newCup: \n");
-                    // printCupWater(new_Cup);
-                    n->g = node->g +1;  
+                  
+                    n->g = node->g + n->h;  
                     n->f=n->g+n->h;
-                    // printf("==Gia tri g: %d -- f: %d \n",n->g,n->h);
+                  
                     frontiers.insert(n);
                 }
                 else{
@@ -375,35 +359,7 @@ int main(){
     printCupWater(result);
     a = A_start(CupWater,Goal,&hihi);
     print_path(a);
-    // printCupWater(CupWater);
-    
-    // fillWaterCup1(&CupWater,&result);
-    // fillWaterCup1(&result,&CupWater);
-    // PourCupXtoCupY(&CupWater,0,1,&result);
-    // printCupWater(CupWater);
-    // printCupWater(result);
-
-    // PourCupXtoCupY(&result,1,2,&result);
-    // printCupWater(CupWater);
-    // printCupWater(result);
-    
-    // PourCupXtoCupY(&result,2,0,&result);
-    // printCupWater(CupWater);
-    // printCupWater(result);
-
-
-    // result.Cup[1].AmountOfWater = 8;
-
-    if(checkSameGoal(CupWater)){
-        printf("hihi co r ne");
-    }else{
-        printf("huhu");
-    }
-
-
-    // count length of array Object (Cup Water List)
-    // printf("Hello world %d",sizeof(CupWater.Cup)/sizeof(*CupWater.Cup));
-
+   
     return 0;
 }
 
